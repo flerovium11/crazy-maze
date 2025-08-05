@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Barriecito&display=swap');
+
+body {
+    padding: 0;
+    margin: 0;
+    background-color: black;
+    color: white;
+    font-family: 'Barriecito', cursive;
+    font-size: x-large;
+}
+
+#game-canvas {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+}
+
+.overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 1em;
+    width: 10em;
+    max-width: calc(100% - 4em);
+    border-radius: 1em;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+
+    &.visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+button {
+    cursor: pointer;
+}
+
+button:not(.unstyled) {
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    width: 10em;
+    color: white;
+    border: none;
+    font-family: 'Barriecito', cursive;
+    padding: 1em 1em;
+    border-radius: 1em;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100svh;
+}
+
+.error {
+    color: red;
+}
+
+.highscore {
+    color: gold;
+    font-size: large;
+}
+
+#timer {
+    position: fixed;
+    top: 1em;
+    right: 1em;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    font-size: large;
+}
+
+#settings-button {
+    position: fixed;
+    top: 1em;
+    left: 1em;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    font-size: large;
+}
+
+#settings {
+    div {
+        display: flex;
+        margin-top: 1.5em;
+        gap: 1em;
+    }
+
+    input {
+        margin-bottom: 1em;
+    }
+}
+
+input {
+    margin-top: 2em;
+    margin-bottom: 1em;
+}
+
+#back-button {
+    position: fixed;
+    top: 1em;
+    left: 1em;
+    background: none;
+    border: none;
+    color: white;
+    font-size: large;
+    padding: 0.5em;
+    border-radius: 0.5em;
+}

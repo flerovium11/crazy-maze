@@ -1,0 +1,7 @@
+{
+  "port": 8085,
+  "root": "/",
+  "open": "index.html",
+  "host": "localhost",
+  "https": false
+}
