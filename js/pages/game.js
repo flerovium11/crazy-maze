@@ -17,9 +17,46 @@ let gameRunning = false
 let gamePaused = false
 let acceleration = new Vector2D(0, 0)
 let accelerationWithoutGravity = new Vector2D(0, 0)
+let keyboardControlledTilt = new Vector2D(0, 0)
+const keyboardTiltStep = 0.5
 const rollingSound = new MarbleRollingSound()
 let conversionFactor
 let canvasSize = new Vector2D(0, 0)
+
+const handleKeyboardInput = (event) => {
+    if (!gameRunning || gamePaused) return
+    if (event.key === 'ArrowLeft' || event.key === 'a') {
+        keyboardControlledTilt.x = -keyboardTiltStep
+    } else if (event.key === 'ArrowRight' || event.key === 'd') {
+        keyboardControlledTilt.x = keyboardTiltStep
+    } else if (event.key === 'ArrowUp' || event.key === 'w') {
+        keyboardControlledTilt.y = -keyboardTiltStep
+    } else if (event.key === 'ArrowDown' || event.key === 's') {
+        keyboardControlledTilt.y = keyboardTiltStep
+    } else if (event.key === 'Escape') {
+        if (gamePaused) {
+            keyboardControlledTilt = new Vector2D(0, 0)
+        }
+    }
+}
+
+const openSettings = () => {
+    if (!gameRunning || gamePaused) return
+    Sounds.click.start()
+    rollingSound.stop()
+    gamePaused = true
+    document.getElementById('settings').classList.add('visible')
+    document.getElementById('settings-button').setAttribute('disabled', 'true')
+}
+
+const resumeGame = () => {
+    if (!gameRunning || !gamePaused) return
+    Sounds.click.start()
+    gamePaused = false
+    rollingSound.start()
+    document.getElementById('settings').classList.remove('visible')
+    document.getElementById('settings-button').removeAttribute('disabled')
+}
 
 const calculateConversionFactor = () => {
     if (!ctx) {
@@ -73,24 +110,8 @@ export const start = async () => {
         }
     }
 
-    const settingsButton = document.getElementById('settings-button')
-    settingsButton.onclick = () => {
-        if (!gameRunning || gamePaused) return
-        Sounds.click.start()
-        rollingSound.stop()
-        gamePaused = true
-        document.getElementById('settings').classList.add('visible')
-        settingsButton.setAttribute('disabled', 'true')
-    }
-
-    const resumeButton = document.getElementById('resume-game')
-    resumeButton.onclick = () => {
-        Sounds.click.start()
-        gamePaused = false
-        rollingSound.start()
-        document.getElementById('settings').classList.remove('visible')
-        settingsButton.removeAttribute('disabled')
-    }
+    document.getElementById('settings-button').onclick = openSettings
+    document.getElementById('resume-game').onclick = resumeGame
 
     configureAudioSettings()
 
@@ -123,16 +144,23 @@ export const start = async () => {
     }
 
     window.addEventListener('devicemotion', handleMotion, true)
+    window.addEventListener('keydown', handleKeyboardInput)
     gameLoop()
 }
 
 export const stop = async () => {
     gameRunning = false
     window.removeEventListener('resize', handleResize)
+    window.removeEventListener('keydown', handleKeyboardInput)
+    rollingSound.stop()
     window.removeEventListener('devicemotion', handleMotion)
 }
 
 const gameLoop = async () => {
+    acceleration = new Vector2D(0, 0)
+    accelerationWithoutGravity = new Vector2D(0, 0)
+    keyboardControlledTilt = new Vector2D(0, 0)
+
     gameRunning = true
     handleResize()
     gamePaused = false
@@ -303,6 +331,9 @@ const gameLoop = async () => {
         // Logic
         playerSpeed = playerSpeed.multiply(friction) // Simulate friction
         playerSpeed = playerSpeed.add(acceleration.multiply(tiltInfluence))
+        playerSpeed = playerSpeed.add(
+            keyboardControlledTilt.multiply(tiltInfluence)
+        )
         playerSpeed = playerSpeed.add(
             accelerationWithoutGravity.multiply(shakeInfluence)
         )
