@@ -1,7 +1,8 @@
 import * as homeScript from './home.js'
 import * as gameScript from './game.js'
 import * as settingsScript from './settings.js'
-import { Sounds } from './sound.js'
+import * as leaderboardScript from './leaderboard.js'
+import * as aboutScript from './about.js'
 import { loadImage, Images } from './utils.js'
 import { loadLevel, Levels } from './levels.js'
 
@@ -17,6 +18,8 @@ const pageScripts = {
     [Pages.home]: homeScript,
     [Pages.game]: gameScript,
     [Pages.settings]: settingsScript,
+    [Pages.leaderboard]: leaderboardScript,
+    [Pages.about]: aboutScript,
 }
 
 let root

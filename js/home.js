@@ -17,6 +17,18 @@ export const start = async () => {
         Sounds.click.start()
         navigateToPage(Pages.settings)
     }
+
+    const leaderboardButton = document.getElementById('leaderboard-button')
+    leaderboardButton.onclick = () => {
+        Sounds.click.start()
+        navigateToPage(Pages.leaderboard)
+    }
+
+    const aboutButton = document.getElementById('about-button')
+    aboutButton.onclick = () => {
+        Sounds.click.start()
+        navigateToPage(Pages.about)
+    }
 }
 
 export const stop = async () => {}

@@ -100,7 +100,27 @@ main {
     }
 }
 
-#settings-button {
+nav {
+    position: fixed;
+    bottom: 1em;
+    left: 0.5em;
+    right: 0.5em;
+    display: flex;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    gap: 1em;
+
+    button {
+        background-color: rgba(0, 0, 0, 0.5);
+        border: none;
+        color: white;
+        padding: 0.5em;
+        border-radius: 0.5em;
+        font-size: larger;
+    }
+}
+
+button.floating {
     position: fixed;
     top: 1em;
     left: 1em;
@@ -127,16 +147,4 @@ main {
 input {
     margin-top: 2em;
     margin-bottom: 1em;
-}
-
-#back-button {
-    position: fixed;
-    top: 1em;
-    left: 1em;
-    background: none;
-    border: none;
-    color: white;
-    font-size: large;
-    padding: 0.5em;
-    border-radius: 0.5em;
 }
