@@ -76,26 +76,38 @@ export const loadImage = (src) => {
     })
 }
 
-export const xhrRequest = async (
+export const xhrRequest = async ({
     url,
     method = 'GET',
-    asArrayBuffer = false
-) => {
+    headers = {},
+    body = null,
+    asArrayBuffer = false,
+}) => {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest()
         xhr.open(method, url)
+        for (const [key, value] of Object.entries(headers)) {
+            xhr.setRequestHeader(key, value)
+        }
+        if (body) {
+            xhr.setRequestHeader('Content-Type', 'application/json')
+        }
         xhr.responseType = asArrayBuffer ? 'arraybuffer' : 'text'
         xhr.onload = () => {
-            if (xhr.status === 200) {
+            if (xhr.status >= 200 && xhr.status < 300) {
                 resolve(xhr.response)
             } else {
-                reject(new Error(`Failed to load ${url}: ${xhr.statusText}`))
+                reject(
+                    new Error(
+                        `Failed to load ${url}: ${xhr.statusText} (${xhr.status})`
+                    )
+                )
             }
         }
         xhr.onerror = (err) => {
             reject(new Error(`Error while loading ${url}: ${err.message}`))
         }
-        xhr.send()
+        xhr.send(body)
     })
 }
 
@@ -153,5 +165,16 @@ export class Rect {
         }
 
         return { collision: false }
+    }
+}
+
+export const storageAvailable = () => {
+    try {
+        const x = '__storage_test__'
+        localStorage.setItem(x, x)
+        localStorage.removeItem(x)
+        return true
+    } catch (_) {
+        return false
     }
 }

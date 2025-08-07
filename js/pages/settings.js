@@ -1,5 +1,5 @@
-import { navigateToPage, Pages } from './index.js'
-import { configureAudioSettings, Sounds } from './sound.js'
+import { navigateToPage, Pages } from '../index.js'
+import { configureAudioSettings, Sounds } from '../sound.js'
 
 export const start = async () => {
     const backButton = document.getElementById('back-button')

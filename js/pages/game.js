@@ -1,8 +1,8 @@
-import { navigateToPage, Pages } from './index.js'
-import { sleep, Vector2D, loadImage, Images } from './utils.js'
-import { loadLevel, Levels } from './levels.js'
-import { configureAudioSettings, MarbleRollingSound, Sounds } from './sound.js'
-import { JSConfetti } from './lib/js-confetti.browser.js'
+import { navigateToPage, Pages } from '../index.js'
+import { sleep, Vector2D, loadImage, Images } from '../utils.js'
+import { loadLevel, Levels } from '../levels.js'
+import { configureAudioSettings, MarbleRollingSound, Sounds } from '../sound.js'
+import { JSConfetti } from '../lib/js-confetti.browser.js'
 
 const jsConfetti = new JSConfetti()
 

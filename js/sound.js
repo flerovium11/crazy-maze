@@ -1,14 +1,6 @@
-const audioContext = new AudioContext()
+import { storageAvailable } from './utils.js'
 
-document.addEventListener(
-    'click',
-    () => {
-        if (audioContext.state === 'suspended') {
-            audioContext.resume()
-        }
-    },
-    { once: true }
-)
+export const audioContext = new AudioContext()
 
 let soundEffectsEnabled = true
 let musicEnabled = true
@@ -33,6 +25,7 @@ export const setSoundEffectsEnabled = (enabled) => {
             }
         })
     }
+    localStorage.setItem('soundEffectsEnabled', enabled)
 }
 
 export const setMusicEnabled = (enabled) => {
@@ -50,11 +43,14 @@ export const setMusicEnabled = (enabled) => {
             }
         })
     }
+
+    localStorage.setItem('musicEnabled', enabled)
 }
 
 export const setGlobalVolume = (volume) => {
     globalVolume = volume
     globalGain.gain.value = globalVolume
+    localStorage.setItem('globalVolume', globalVolume)
 }
 
 export const configureAudioSettings = () => {
@@ -78,6 +74,23 @@ export const configureAudioSettings = () => {
         const volume = event.target.value / 100
         setGlobalVolume(volume)
     }
+}
+
+export const loadAudioSettingsFromStorage = () => {
+    if (!storageAvailable()) {
+        console.warn(
+            'LocalStorage is not available. Skipping audio settings load.'
+        )
+        return
+    }
+
+    const soundEffects = localStorage.getItem('soundEffectsEnabled')
+    const music = localStorage.getItem('musicEnabled')
+    const volume = localStorage.getItem('globalVolume')
+
+    if (soundEffects !== null) setSoundEffectsEnabled(soundEffects === 'true')
+    if (music !== null) setMusicEnabled(music === 'true')
+    if (volume !== null) setGlobalVolume(parseFloat(volume))
 }
 
 const fetchAudio = async (src) => {

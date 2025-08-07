@@ -45,7 +45,11 @@ export const loadLevel = async (src) => {
     }
 
     const wallThickness = 5
-    const levelFile = await xhrRequest(src, 'GET', true)
+    const levelFile = await xhrRequest({
+        url: src,
+        method: 'GET',
+        asArrayBuffer: true,
+    })
     const zipFolder = await zip.loadAsync(levelFile)
     const levelData = await zipFolder.file('geogebra.xml').async('text')
     const parser = new DOMParser()

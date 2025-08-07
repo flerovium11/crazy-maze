@@ -1,10 +1,13 @@
-import * as homeScript from './home.js'
-import * as gameScript from './game.js'
-import * as settingsScript from './settings.js'
-import * as leaderboardScript from './leaderboard.js'
-import * as aboutScript from './about.js'
+import * as homeScript from './pages/home.js'
+import * as gameScript from './pages/game.js'
+import * as settingsScript from './pages/settings.js'
+import * as leaderboardScript from './pages/leaderboard.js'
+import * as aboutScript from './pages/about.js'
+
 import { loadImage, Images } from './utils.js'
 import { loadLevel, Levels } from './levels.js'
+import { audioContext, loadAudioSettingsFromStorage } from './sound.js'
+import { listenToConnectivity } from './server.js'
 
 export class Pages {
     static home = 'home'
@@ -73,13 +76,27 @@ const preloadLevels = async () => {
 // - [ ] Supabase connection
 // - [ ] Add leaderboard (icon bar at top, same as settings page yk)
 // - [ ] online/offline indicator and store stuff in localStorage while offline
-// - [ ] Add about page with credits and instructions
 // - [ ] Cordova
 // - [ ] Presentation (mirror phone screen to desktop, also sound, script)
 
 const start = async () => {
     root = document.getElementById('game')
+
+    loadAudioSettingsFromStorage()
+    listenToConnectivity()
+
     await navigateToPage(Pages.home)
+
+    // Sound cannot be played until user interacts with page for first time
+    document.addEventListener(
+        'click',
+        () => {
+            if (audioContext.state === 'suspended') {
+                audioContext.resume()
+            }
+        },
+        { once: true }
+    )
 
     window.addEventListener('error', (err) => {
         console.error('An error occurred:', err.message)

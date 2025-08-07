@@ -1,6 +1,6 @@
-import { navigateToPage } from './index.js'
-import { Sounds } from './sound.js'
-import { Pages } from './index.js'
+import { navigateToPage } from '../index.js'
+import { Sounds } from '../sound.js'
+import { Pages } from '../index.js'
 
 export const start = async () => {
     Sounds.mainTheme.start()
