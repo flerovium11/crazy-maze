@@ -1,10 +1,13 @@
 import { navigateToPage, Pages } from '../index.js'
 import { getHighscores, getUnsyncedHighscores } from '../server.js'
-import { Sounds } from '../sound.js'
+import { Sounds, pauseMainMusic, resumeMainMusic } from '../sound.js'
 
 let lastLeaderboardContent = null
 
 export const start = async () => {
+    document.addEventListener('pause', pauseMainMusic)
+    document.addEventListener('resume', resumeMainMusic)
+
     const backButton = document.getElementById('back-button')
     backButton.onclick = () => {
         Sounds.click.start()
@@ -70,4 +73,7 @@ export const start = async () => {
     lastLeaderboardContent = leaderboardTable.innerHTML
 }
 
-export const stop = async () => {}
+export const stop = async () => {
+    document.removeEventListener('pause', pauseMainMusic)
+    document.removeEventListener('resume', resumeMainMusic)
+}

@@ -428,3 +428,12 @@ export class Sounds {
     static marbleDrop = new MarbleDropSound()
     static marbleCollision = new MarbleCollisionSound()
 }
+
+export const pauseMainMusic = () => {
+    Sounds.mainTheme.pause()
+}
+
+export const resumeMainMusic = () => {
+    if (!musicEnabled) return
+    Sounds.mainTheme.resume()
+}

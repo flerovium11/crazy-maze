@@ -1,9 +1,11 @@
 import { navigateToPage } from '../index.js'
-import { Sounds } from '../sound.js'
+import { Sounds, pauseMainMusic, resumeMainMusic } from '../sound.js'
 import { Pages } from '../index.js'
 
 export const start = async () => {
     Sounds.mainTheme.start()
+    document.addEventListener('pause', pauseMainMusic)
+    document.addEventListener('resume', resumeMainMusic)
 
     const startButton = document.getElementById('start-race')
     startButton.onclick = () => {
@@ -31,4 +33,7 @@ export const start = async () => {
     }
 }
 
-export const stop = async () => {}
+export const stop = async () => {
+    document.removeEventListener('pause', pauseMainMusic)
+    document.removeEventListener('resume', resumeMainMusic)
+}
