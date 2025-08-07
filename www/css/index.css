@@ -165,7 +165,8 @@ input {
 
 table {
     width: calc(100vw - 2em);
-    margin: auto;
+    margin: 0 auto;
+    max-width: 800px;
     border-collapse: collapse;
     margin-top: 1em;
 
