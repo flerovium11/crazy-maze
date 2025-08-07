@@ -88,6 +88,18 @@ main {
     font-size: large;
 }
 
+#fps {
+    position: fixed;
+    color: white;
+    font-size: large;
+    bottom: 0em;
+    left: 0.5em;
+
+    &.warning {
+        color: orange;
+    }
+}
+
 #settings-button {
     position: fixed;
     top: 1em;

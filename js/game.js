@@ -18,6 +18,7 @@ let acceleration = new Vector2D(0, 0)
 let accelerationWithoutGravity = new Vector2D(0, 0)
 const rollingSound = new MarbleRollingSound()
 let conversionFactor
+let canvasSize = new Vector2D(0, 0)
 
 const calculateConversionFactor = () => {
     if (!ctx) {
@@ -47,6 +48,8 @@ const handleMotion = (event) => {
 const handleResize = () => {
     canvas.width = canvas.offsetWidth
     canvas.height = canvas.offsetHeight
+    canvasSize.x = canvas.width
+    canvasSize.y = canvas.height
     calculateConversionFactor()
 }
 
@@ -168,11 +171,20 @@ const gameLoop = async () => {
     let deathPosition = null
     let elapsedTime = 0
     let lastFrameStart = performance.now()
+
     const deathAnimationDuration = 300
     const minSpeedForCollisionSound = 4
     const wallBounceFactor = 0.7
+    const backgroundPosition = new Vector2D(0, 0)
+    const fpsDisplay = document.getElementById('fps')
 
-    const project = (position) => {}
+    const project = (center, size) => {
+        return center
+            .subtract(size.divide(2))
+            .subtract(cameraPosition)
+            .multiply(conversionFactor)
+            .add(canvasSize.divide(2))
+    }
 
     rollingSound.start()
 
@@ -183,7 +195,6 @@ const gameLoop = async () => {
             continue
         }
 
-        frameCount++
         const frameStart = performance.now()
         elapsedTime += (frameStart - lastFrameStart) / 1000
         lastFrameStart = frameStart
@@ -294,33 +305,36 @@ const gameLoop = async () => {
         }
 
         // Camera follows player
-        cameraPosition.x +=
-            (playerPosition.x - cameraPosition.x) * cameraFollowSpeed
-        cameraPosition.y +=
-            (playerPosition.y - cameraPosition.y) * cameraFollowSpeed
+        cameraPosition = cameraPosition.add(
+            playerPosition.subtract(cameraPosition).multiply(cameraFollowSpeed)
+        )
 
         // Drawing
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+        ctx.clearRect(0, 0, canvasSize.x, canvasSize.y)
+
+        const backgroundProjected = project(
+            backgroundPosition,
+            new Vector2D(mapWidth, mapHeight)
+        )
 
         ctx.drawImage(
             backgroundImage,
-            (0 - mapWidth / 2 - cameraPosition.x) * conversionFactor +
-                ctx.canvas.width / 2,
-            (0 - mapHeight / 2 - cameraPosition.y) * conversionFactor +
-                ctx.canvas.height / 2,
+            backgroundProjected.x,
+            backgroundProjected.y,
             mapWidth * conversionFactor,
             mapHeight * conversionFactor
         )
 
         for (const hole of level.holes) {
+            const holeProjected = project(
+                hole.position,
+                new Vector2D(hole.radius * 2, hole.radius * 2)
+            )
+
             ctx.drawImage(
                 holeImage,
-                (hole.position.x - hole.radius - cameraPosition.x) *
-                    conversionFactor +
-                    ctx.canvas.width / 2,
-                (hole.position.y - hole.radius - cameraPosition.y) *
-                    conversionFactor +
-                    ctx.canvas.height / 2,
+                holeProjected.x,
+                holeProjected.y,
                 hole.radius * 2 * conversionFactor,
                 hole.radius * 2 * conversionFactor
             )
@@ -328,41 +342,47 @@ const gameLoop = async () => {
 
         marbleIndex += playerSpeed.magnitude() * 0.1
         const marble = marbles[Math.floor(marbleIndex) % marbles.length]
+
+        const playerProjected = project(
+            playerPosition,
+            new Vector2D(visualPlayerRadius, visualPlayerRadius).multiply(
+                scaleMarbleFactor * 2
+            )
+        )
+
         ctx.drawImage(
             marble,
-            (playerPosition.x -
-                visualPlayerRadius * scaleMarbleFactor -
-                cameraPosition.x) *
-                conversionFactor +
-                ctx.canvas.width / 2,
-            (playerPosition.y -
-                visualPlayerRadius * scaleMarbleFactor -
-                cameraPosition.y) *
-                conversionFactor +
-                ctx.canvas.height / 2,
+            playerProjected.x,
+            playerProjected.y,
             visualPlayerRadius * 2 * conversionFactor * scaleMarbleFactor,
             visualPlayerRadius * 2 * conversionFactor * scaleMarbleFactor
         )
 
+        const goalProjected = project(
+            level.goalPosition,
+            new Vector2D(level.goalRadius * 2, level.goalRadius * 2)
+        )
+
         ctx.drawImage(
             goalImage,
-            (level.goalPosition.x - level.goalRadius - cameraPosition.x) *
-                conversionFactor +
-                ctx.canvas.width / 2,
-            (level.goalPosition.y - level.goalRadius - cameraPosition.y) *
-                conversionFactor +
-                ctx.canvas.height / 2,
+            goalProjected.x,
+            goalProjected.y,
             level.goalRadius * 2 * conversionFactor,
             level.goalRadius * 2 * conversionFactor
         )
 
         for (const wall of level.walls) {
             ctx.fillStyle = 'rgba(133, 84, 0, 1)'
+            const wallProjected = project(
+                new Vector2D(
+                    wall.minX + wall.maxX,
+                    wall.minY + wall.maxY
+                ).divide(2),
+                new Vector2D(wall.width, wall.height)
+            )
             ctx.fillRect(
-                (wall.minX - cameraPosition.x) * conversionFactor +
-                    ctx.canvas.width / 2,
-                (wall.minY - cameraPosition.y) * conversionFactor +
-                    ctx.canvas.height / 2,
+                wallProjected.x,
+                wallProjected.y,
                 wall.width * conversionFactor,
                 wall.height * conversionFactor
             )
@@ -376,5 +396,17 @@ const gameLoop = async () => {
         } else {
             await sleep(targetFrameDuration - frameTime)
         }
+
+        if (frameCount % 50 === 0) {
+            if (frameTime > targetFrameDuration) {
+                fpsDisplay.textContent = (1000 / frameTime).toFixed(1) + ' FPS'
+                fpsDisplay.classList.add('warning')
+            } else {
+                fpsDisplay.textContent = targetFrameRate + ' FPS'
+                fpsDisplay.classList.remove('warning')
+            }
+        }
+
+        frameCount++
     }
 }
