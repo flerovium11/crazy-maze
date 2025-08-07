@@ -1,5 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.crazymaze.app" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <feature name="CDVOrientation">
+        <param name="android-package" value="cordova.plugins.screenorientation.CDVOrientation" />
+    </feature>
+    <feature name="Device">
+        <param name="android-package" value="org.apache.cordova.device.Device" />
+    </feature>
+    <feature name="NetworkStatus">
+        <param name="android-package" value="org.apache.cordova.networkinformation.NetworkManager" />
+    </feature>
     <name>CrazyMaze</name>
     <description>Get ready to race!</description>
     <author email="enniobinder@gmail.com" href="mailto:enniobinder@gmail.com?subject=CrazyMaze%20Anfrage">
@@ -8,5 +17,12 @@
     <content src="index.html" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
+    <icon background="res/mipmap-mdpi/ic_launcher_background.png" density="mdpi" foreground="res/mipmap-mdpi/ic_launcher.png" src="res/mipmap-mdpi/ic_launcher.png" />
+    <icon background="res/mipmap-hdpi/ic_launcher_background.png" density="hdpi" foreground="res/mipmap-hdpi/ic_launcher.png" src="res/mipmap-hdpi/ic_launcher.png" />
+    <icon background="res/mipmap-xhdpi/ic_launcher_background.png" density="xhdpi" foreground="res/mipmap-xhdpi/ic_launcher.png" src="res/mipmap-xhdpi/ic_launcher.png" />
+    <icon background="res/mipmap-xxhdpi/ic_launcher_background.png" density="xxhdpi" foreground="res/mipmap-xxhdpi/ic_launcher.png" src="res/mipmap-xxhdpi/ic_launcher.png" />
+    <icon background="res/mipmap-xxxhdpi/ic_launcher_background.png" density="xxxhdpi" foreground="res/mipmap-xxxhdpi/ic_launcher.png" src="res/mipmap-xxxhdpi/ic_launcher.png" />
     <preference name="loglevel" value="DEBUG" />
+    <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/splash.png" />
+    <preference name="AndroidWindowSplashScreenBackground" value="#000000" />
 </widget>

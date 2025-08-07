@@ -2,6 +2,8 @@ import { navigateToPage, Pages } from '../index.js'
 import { getHighscores, getUnsyncedHighscores } from '../server.js'
 import { Sounds } from '../sound.js'
 
+let lastLeaderboardContent = null
+
 export const start = async () => {
     const backButton = document.getElementById('back-button')
     backButton.onclick = () => {
@@ -12,7 +14,12 @@ export const start = async () => {
     const infoElement = document.querySelector('.info')
     const leaderboardTable = document.querySelector('table')
 
-    infoElement.innerText = 'Loading leaderboard...'
+    if (lastLeaderboardContent) {
+        leaderboardTable.innerHTML = lastLeaderboardContent
+    } else {
+        infoElement.innerText = 'Loading leaderboard...'
+    }
+
     let usingFallback = false
     const highscores = await getHighscores(1, () => (usingFallback = true))
 
@@ -60,6 +67,7 @@ export const start = async () => {
         tableBody.appendChild(row)
     })
     leaderboardTable.appendChild(tableBody)
+    lastLeaderboardContent = leaderboardTable.innerHTML
 }
 
 export const stop = async () => {}

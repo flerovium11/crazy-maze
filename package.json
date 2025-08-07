@@ -14,12 +14,21 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "cordova-android": "^14.0.1",
-    "cordova-ios": "^7.1.1"
+    "cordova-ios": "^7.1.1",
+    "cordova-plugin-device": "^3.0.0",
+    "cordova-plugin-network-information": "^3.0.0",
+    "cordova-plugin-screen-orientation": "^3.0.4",
+    "es6-promise-plugin": "^4.2.2"
   },
   "cordova": {
     "platforms": [
       "ios",
       "android"
-    ]
+    ],
+    "plugins": {
+      "cordova-plugin-screen-orientation": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-network-information": {}
+    }
   }
 }

@@ -4,8 +4,97 @@
     "uninstalled": []
   },
   "config_munge": {
-    "files": {}
+    "files": {
+      "res/xml/config.xml": {
+        "parents": {
+          "/*": [
+            {
+              "xml": "<feature name=\"CDVOrientation\"><param name=\"android-package\" value=\"cordova.plugins.screenorientation.CDVOrientation\" /></feature>",
+              "count": 1
+            },
+            {
+              "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
+              "count": 1
+            },
+            {
+              "xml": "<feature name=\"NetworkStatus\"><param name=\"android-package\" value=\"org.apache.cordova.networkinformation.NetworkManager\" /></feature>",
+              "count": 1
+            }
+          ]
+        }
+      },
+      "AndroidManifest.xml": {
+        "parents": {
+          "/*": [
+            {
+              "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
+              "count": 1
+            }
+          ]
+        }
+      }
+    }
   },
-  "installed_plugins": {},
-  "dependent_plugins": {}
+  "installed_plugins": {
+    "es6-promise-plugin": {
+      "PACKAGE_NAME": "com.crazymaze.app"
+    },
+    "cordova-plugin-screen-orientation": {
+      "PACKAGE_NAME": "com.crazymaze.app"
+    },
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "com.crazymaze.app"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "com.crazymaze.app"
+    }
+  },
+  "dependent_plugins": {},
+  "modules": [
+    {
+      "id": "es6-promise-plugin.Promise",
+      "file": "plugins/es6-promise-plugin/www/promise.js",
+      "pluginId": "es6-promise-plugin",
+      "runs": true
+    },
+    {
+      "id": "cordova-plugin-screen-orientation.screenorientation",
+      "file": "plugins/cordova-plugin-screen-orientation/www/screenorientation.js",
+      "pluginId": "cordova-plugin-screen-orientation",
+      "clobbers": [
+        "cordova.plugins.screenorientation",
+        "screen.orientation"
+      ]
+    },
+    {
+      "id": "cordova-plugin-device.device",
+      "file": "plugins/cordova-plugin-device/www/device.js",
+      "pluginId": "cordova-plugin-device",
+      "clobbers": [
+        "device"
+      ]
+    },
+    {
+      "id": "cordova-plugin-network-information.network",
+      "file": "plugins/cordova-plugin-network-information/www/network.js",
+      "pluginId": "cordova-plugin-network-information",
+      "clobbers": [
+        "navigator.connection"
+      ]
+    },
+    {
+      "id": "cordova-plugin-network-information.Connection",
+      "file": "plugins/cordova-plugin-network-information/www/Connection.js",
+      "pluginId": "cordova-plugin-network-information",
+      "clobbers": [
+        "Connection"
+      ]
+    }
+  ],
+  "plugin_metadata": {
+    "es6-promise-plugin": "4.2.2",
+    "cordova-plugin-screen-orientation": "3.0.4",
+    "cordova-plugin-device": "3.0.0",
+    "cordova-plugin-network-information": "3.0.0"
+  }
 }

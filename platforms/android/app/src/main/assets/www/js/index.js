@@ -4,7 +4,7 @@ import * as settingsScript from './pages/settings.js'
 import * as leaderboardScript from './pages/leaderboard.js'
 import * as aboutScript from './pages/about.js'
 
-import { loadImage, Images } from './utils.js'
+import { loadImage, Images, isCordova } from './utils.js'
 import { loadLevel, Levels } from './levels.js'
 import { audioContext, loadAudioSettingsFromStorage } from './sound.js'
 import { listenToConnectivity } from './server.js'
@@ -72,12 +72,9 @@ const preloadLevels = async () => {
     }
 }
 
-// TODO:
-// - [ ] Cordova
-// - [ ] Presentation (mirror phone screen to desktop, also sound, script)
-
 const start = async () => {
     root = document.getElementById('game')
+    if (isCordova) window.screen.orientation.lock('portrait')
 
     loadAudioSettingsFromStorage()
     listenToConnectivity()
@@ -97,11 +94,15 @@ const start = async () => {
 
     window.addEventListener('error', (err) => {
         console.error('An error occurred:', err.message)
-        root.innerHTML = `<h1>Error</h1><p>${err.message}</p>`
+        root.innerHTML = `<h1 class="error">Error</h1><p class="error">${err.message}</p>`
     })
 
     window.addEventListener('unhandledrejection', (err) => {
         root.innerHTML = `<h1 class="error">Error</h1><p class="error">${err.reason.message} ${err.reason.stack}</p>`
+    })
+
+    window.addEventListener('cordovacallbackerror', (event) => {
+        root.innerHTML = `<h1 class="error">Cordova Error</h1><p class="error">${event.error.message}</p>`
     })
 
     // pre-load all our images in the background
@@ -119,9 +120,10 @@ const start = async () => {
     })
 }
 
-const stop = async () => {
-    await pageScripts[currentPage].stop()
+document.body.onload = () => {
+    if (isCordova) {
+        document.addEventListener('deviceready', start, false)
+    } else {
+        start()
+    }
 }
-
-document.addEventListener('DOMContentLoaded', start)
-document.addEventListener('beforeunload', stop)

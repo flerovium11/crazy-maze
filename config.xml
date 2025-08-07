@@ -8,4 +8,17 @@
     <content src="index.html" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
+    <platform name="android">
+        <icon src="res/mipmap-mdpi/ic_launcher.png" foreground="res/mipmap-mdpi/ic_launcher.png" background="res/mipmap-mdpi/ic_launcher_background.png" density="mdpi" />
+        <icon src="res/mipmap-hdpi/ic_launcher.png" foreground="res/mipmap-hdpi/ic_launcher.png" background="res/mipmap-hdpi/ic_launcher_background.png" density="hdpi" />
+        <icon src="res/mipmap-xhdpi/ic_launcher.png" foreground="res/mipmap-xhdpi/ic_launcher.png" background="res/mipmap-xhdpi/ic_launcher_background.png" density="xhdpi" />
+        <icon src="res/mipmap-xxhdpi/ic_launcher.png" foreground="res/mipmap-xxhdpi/ic_launcher.png" background="res/mipmap-xxhdpi/ic_launcher_background.png" density="xxhdpi" />
+        <icon src="res/mipmap-xxxhdpi/ic_launcher.png" foreground="res/mipmap-xxxhdpi/ic_launcher.png" background="res/mipmap-xxxhdpi/ic_launcher_background.png" density="xxxhdpi" />
+        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/splash.png" />
+        <preference name="AndroidWindowSplashScreenBackground" value="#000000" />
+    </platform>
+    <platform name="ios">
+        <icon src="res/icon.png"/>
+        <splash src="res/splash.png"/>
+    </platform>
 </widget>

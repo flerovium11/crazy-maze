@@ -145,14 +145,17 @@ export const start = async () => {
 
     window.addEventListener('devicemotion', handleMotion, true)
     window.addEventListener('keydown', handleKeyboardInput)
+    document.addEventListener('pause', openSettings, false)
+
     gameLoop()
 }
 
 export const stop = async () => {
     gameRunning = false
+    rollingSound.stop()
     window.removeEventListener('resize', handleResize)
     window.removeEventListener('keydown', handleKeyboardInput)
-    rollingSound.stop()
+    document.removeEventListener('pause', openSettings)
     window.removeEventListener('devicemotion', handleMotion)
 }
 

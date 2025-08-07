@@ -1,4 +1,5 @@
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+export const isCordova = !!device.cordova
 
 export class Vector2D {
     constructor(x, y) {

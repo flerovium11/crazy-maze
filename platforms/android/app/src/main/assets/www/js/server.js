@@ -1,5 +1,5 @@
 import { SUPABASE_KEY, SUPABASE_URL } from './config.js'
-import { xhrRequest, storageAvailable } from './utils.js'
+import { xhrRequest, storageAvailable, isCordova } from './utils.js'
 
 const insertIntoHighscoresTable = async (payload) => {
     await xhrRequest({
@@ -113,16 +113,24 @@ export const getHighscores = async (level, onFallback = null) => {
 
 export let isOnline = true
 export const listenToConnectivity = () => {
-    isOnline = window.navigator.onLine
+    isOnline = isCordova
+        ? navigator.connection.type !== Connection.NONE
+        : window.navigator.onLine
 
-    window.addEventListener('online', () => {
+    const onOnline = () => {
         isOnline = true
         syncHighscores()
-    })
+    }
 
-    window.addEventListener('offline', () => {
+    const onOffline = () => {
         isOnline = false
-    })
+    }
+
+    // window for browser and document for cordova-plugin-network-information
+    window.addEventListener('online', onOnline)
+    document.addEventListener('online', onOnline)
+    window.addEventListener('offline', onOffline)
+    document.addEventListener('offline', onOffline)
 }
 
 const syncHighscores = async () => {

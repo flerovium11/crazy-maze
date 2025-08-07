@@ -40,4 +40,13 @@
     <preference name="SuppressesIncrementalRendering" value="false" />
     <preference name="SuppressesLongPressGesture" value="false" />
     <preference name="Suppresses3DTouchGesture" value="false" />
+    <feature name="CDVOrientation">
+        <param name="ios-package" value="CDVOrientation" />
+    </feature>
+    <feature name="Device">
+        <param name="ios-package" value="CDVDevice" />
+    </feature>
+    <feature name="NetworkStatus">
+        <param name="ios-package" value="CDVConnection" />
+    </feature>
 </widget>

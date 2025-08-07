@@ -65,7 +65,8 @@ main {
     justify-content: center;
     align-items: center;
     text-align: center;
-    height: 100svh;
+    padding: 1em;
+    height: calc(100svh - 2em);
 }
 
 .error {
