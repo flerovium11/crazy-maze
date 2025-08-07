@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Barriecito&display=swap');
 
+/* This is a game, you shouldn't be able to select text */
+* {
+    user-select: none;
+}
+
 body {
     padding: 0;
     margin: 0;

@@ -10,7 +10,7 @@ export class Level {
         mapHeight,
         startPosition,
         goalPosition,
-        playerRadius = 7,
+        playerRadius = 9,
         goalRadius = 20
     ) {
         this.holes = holes

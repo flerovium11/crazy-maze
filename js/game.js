@@ -6,9 +6,9 @@ import { JSConfetti } from './lib/js-confetti.browser.js'
 
 const jsConfetti = new JSConfetti()
 
-// Meaning viewport width and height can be max 20% of the game size
-const viewportWidthFactor = 0.2
-const viewportHeightFactor = 0.2
+// Meaning viewport width and height can be max 30% of the game size
+const viewportWidthFactor = 0.3
+const viewportHeightFactor = 0.3
 let mapWidth, mapHeight
 
 let canvas, ctx
@@ -169,7 +169,10 @@ const gameLoop = async () => {
     let elapsedTime = 0
     let lastFrameStart = performance.now()
     const deathAnimationDuration = 300
-    const minSpeedForCollisionSound = 1
+    const minSpeedForCollisionSound = 4
+    const wallBounceFactor = 0.7
+
+    const project = (position) => {}
 
     rollingSound.start()
 
@@ -210,24 +213,29 @@ const gameLoop = async () => {
 
                 // Check for collisions with walls
                 for (const wall of level.walls) {
-                    if (wall.collideX(playerPosition, playerRadius)) {
-                        playerSpeed.x *= -0.5
-                        if (
-                            Math.abs(playerSpeed.x) > minSpeedForCollisionSound
-                        ) {
-                            Sounds.marbleCollision.start()
-                            break
-                        }
+                    const collision = wall.collide(
+                        playerPosition,
+                        playerRadius,
+                        playerSpeed
+                    )
+
+                    if (!collision.collision) continue
+
+                    const approachSpeed = -playerSpeed.dot(collision.normal)
+                    if (approachSpeed > minSpeedForCollisionSound) {
+                        Sounds.marbleCollision.start()
                     }
-                    if (wall.collideY(playerPosition, playerRadius)) {
-                        playerSpeed.y *= -0.5
-                        if (
-                            Math.abs(playerSpeed.y) > minSpeedForCollisionSound
-                        ) {
-                            Sounds.marbleCollision.start()
-                            break
-                        }
-                    }
+
+                    playerPosition = playerPosition.add(
+                        collision.normal.multiply(collision.penetration)
+                    )
+
+                    const dotProduct = playerSpeed.dot(collision.normal)
+                    playerSpeed = playerSpeed.subtract(
+                        collision.normal.multiply(
+                            2 * dotProduct * wallBounceFactor
+                        )
+                    )
                 }
             }
 

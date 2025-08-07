@@ -34,6 +34,10 @@ export class Vector2D {
         return Math.sqrt(this.x ** 2 + this.y ** 2)
     }
 
+    dot(vector) {
+        return this.x * vector.x + this.y * vector.y
+    }
+
     copy() {
         return new Vector2D(this.x, this.y)
     }
@@ -112,43 +116,42 @@ export class Rect {
         this.height = height
     }
 
-    collideX(position, radius) {
-        // If position not in Y range, skip
-        if (position.y < this.minY || position.y > this.maxY) {
-            return false
-        }
+    collide(position, radius, velocity) {
+        const closestPoint = new Vector2D(
+            Math.max(this.minX, Math.min(position.x, this.maxX)),
+            Math.max(this.minY, Math.min(position.y, this.maxY))
+        )
 
-        // X with radius is further right than left wall edge
-        if (position.x + radius > this.minX) {
-            if (position.x < this.maxX) {
-                // X is further left than right wall edge -> collision from left
-                position.x = this.minX - radius
-                return true
-            } else if (position.x - radius < this.maxX) {
-                position.x = this.maxX + radius
-                return true
+        const distanceVector = position.subtract(closestPoint)
+        const distance = distanceVector.magnitude()
+
+        if (distance < radius) {
+            if (distance === 0) {
+                const magnitude = velocity.magnitude()
+                if (magnitude > 0) {
+                    return {
+                        collision: true,
+                        normal: velocity.divide(-magnitude),
+                        penetration: radius,
+                    }
+                }
+
+                return {
+                    collision: true,
+                    normal: new Vector2D(0, 0),
+                    penetration: radius,
+                }
+            }
+
+            const penetration = radius - distance
+
+            return {
+                collision: true,
+                normal: distanceVector.divide(distance),
+                penetration: penetration,
             }
         }
 
-        return false
-    }
-
-    collideY(position, radius) {
-        // If position not in X range, skip
-        if (position.x < this.minX || position.x > this.maxX) {
-            return false
-        }
-
-        // Y with radius is further down than top wall edge
-        if (position.y + radius > this.minY) {
-            if (position.y < this.maxY) {
-                // Y is further up than bottom wall edge -> collision from above
-                position.y = this.minY - radius
-                return true
-            } else if (position.y - radius < this.maxY) {
-                position.y = this.maxY + radius
-                return true
-            }
-        }
+        return { collision: false }
     }
 }
