@@ -327,8 +327,8 @@ const gameLoop = async () => {
 
                     if (!collision.collision) continue
 
-                    const approachSpeed = -playerSpeed.dot(collision.normal)
-                    if (approachSpeed > minSpeedForCollisionSound) {
+                    const dotProduct = playerSpeed.dot(collision.normal)
+                    if (-dotProduct > minSpeedForCollisionSound) {
                         Sounds.marbleCollision.start()
                     }
 
@@ -336,7 +336,6 @@ const gameLoop = async () => {
                         collision.normal.multiply(collision.penetration)
                     )
 
-                    const dotProduct = playerSpeed.dot(collision.normal)
                     playerSpeed = playerSpeed.subtract(
                         collision.normal.multiply(
                             2 * dotProduct * wallBounceFactor

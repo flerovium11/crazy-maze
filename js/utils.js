@@ -137,34 +137,33 @@ export class Rect {
         const distanceVector = position.subtract(closestPoint)
         const distance = distanceVector.magnitude()
 
-        if (distance < radius) {
-            if (distance === 0) {
-                const magnitude = velocity.magnitude()
-                if (magnitude > 0) {
-                    return {
-                        collision: true,
-                        normal: velocity.divide(-magnitude),
-                        penetration: radius,
-                    }
-                }
+        if (distance >= radius) return { collision: false }
 
+        if (distance === 0) {
+            const magnitude = velocity.magnitude()
+            if (magnitude > 0) {
                 return {
                     collision: true,
-                    normal: new Vector2D(0, 0),
+                    normal: velocity.divide(-magnitude),
                     penetration: radius,
                 }
             }
 
-            const penetration = radius - distance
-
+            // This should not happen, player will get stuck in rect
             return {
                 collision: true,
-                normal: distanceVector.divide(distance),
-                penetration: penetration,
+                normal: new Vector2D(0, 0),
+                penetration: radius,
             }
         }
 
-        return { collision: false }
+        const penetration = radius - distance
+
+        return {
+            collision: true,
+            normal: distanceVector.divide(distance),
+            penetration: penetration,
+        }
     }
 }
 
