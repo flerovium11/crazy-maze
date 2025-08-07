@@ -1,5 +1,5 @@
 import { navigateToPage, Pages } from '../index.js'
-import { getHighscores } from '../server.js'
+import { getHighscores, getUnsyncedHighscores } from '../server.js'
 import { Sounds } from '../sound.js'
 
 export const start = async () => {
@@ -23,9 +23,15 @@ export const start = async () => {
 
     if (usingFallback) {
         infoElement.innerText =
-            'No internet connection, you are viewing a local copy.'
+            'No internet connection, you are viewing a local copy which might not be up-to-date.'
     } else {
-        infoElement.style.display = 'none'
+        const unsyncedHighscores = getUnsyncedHighscores()
+        if (unsyncedHighscores.length > 0) {
+            infoElement.innerText =
+                'You might not see your latest highscores, as they are not synced with the server yet. Check your internet connection.'
+        } else {
+            infoElement.style.display = 'none'
+        }
     }
 
     if (!leaderboardTable) {

@@ -3,6 +3,7 @@ import { sleep, Vector2D, loadImage, Images } from '../utils.js'
 import { loadLevel, Levels } from '../levels.js'
 import { configureAudioSettings, MarbleRollingSound, Sounds } from '../sound.js'
 import { JSConfetti } from '../lib/js-confetti.browser.js'
+import { getHighscoreType, HighscoreType, insertHighscore } from '../server.js'
 
 const jsConfetti = new JSConfetti()
 
@@ -46,6 +47,7 @@ const handleMotion = (event) => {
 }
 
 const handleResize = () => {
+    if (!gameRunning) return
     canvas.width = canvas.offsetWidth
     canvas.height = canvas.offsetHeight
     canvasSize.x = canvas.width
@@ -60,6 +62,14 @@ export const start = async () => {
             document.getElementById('settings').classList.remove('visible')
             Sounds.click.start()
             navigateToPage(Pages.home)
+        }
+    }
+
+    const retryButtons = document.getElementsByClassName('retry-button')
+    for (const button of retryButtons) {
+        button.onclick = () => {
+            Sounds.click.start()
+            navigateToPage(Pages.game, true)
         }
     }
 
@@ -113,7 +123,6 @@ export const start = async () => {
     }
 
     window.addEventListener('devicemotion', handleMotion, true)
-    handleResize()
     gameLoop()
 }
 
@@ -125,6 +134,7 @@ export const stop = async () => {
 
 const gameLoop = async () => {
     gameRunning = true
+    handleResize()
     gamePaused = false
     if (!ctx) {
         throw new Error('Canvas context is not initialized yet.')
@@ -139,10 +149,11 @@ const gameLoop = async () => {
     const shakeInfluence = 0.02
     const cameraFollowSpeed = 0.2
     const minCollisionCheckPixelResolution = 2
-    const generousHoleHitboxFactor = 0.8
+    const generousHoleHitboxFactor = 1
 
-    // The marble does not cover the whole image in our gif frames
+    // The marble and holes don't cover the whole image
     const scaleMarbleFactor = 1.4
+    const scaleHoleFactor = 1.2
 
     const backgroundImage = await loadImage(Images.background)
     const holeImage = await loadImage(Images.hole)
@@ -184,6 +195,90 @@ const gameLoop = async () => {
             .subtract(cameraPosition)
             .multiply(conversionFactor)
             .add(canvasSize.divide(2))
+    }
+
+    const gameOver = () => {
+        document.getElementById('game-over').classList.add('visible')
+        Sounds.gameOver.start()
+        gameRunning = false
+    }
+
+    const gameComplete = async (elapsedTime) => {
+        const gameCompleteElement = document.getElementById('game-complete')
+        gameCompleteElement.classList.add('visible')
+        document.getElementById('completion-time').textContent =
+            elapsedTime.toFixed(2)
+        jsConfetti.addConfetti({
+            emojis: ['🏆', '🎉', '🥳'],
+        })
+        Sounds.gameComplete.start()
+        rollingSound.stop()
+        gameRunning = false
+
+        const timeMs = Math.round(elapsedTime * 1000)
+
+        const infoElement = document.querySelector('.info')
+        const homeButton = document.querySelector('#game-complete .home-button')
+
+        homeButton.setAttribute('disabled', 'true')
+        const highscoreType = await getHighscoreType(level.levelNumber, timeMs)
+
+        const achievedHighscore = highscoreType !== HighscoreType.none
+        if (achievedHighscore) {
+            infoElement.classList.add('epic')
+            homeButton.textContent = 'Continue'
+            infoElement.textContent =
+                highscoreType === HighscoreType.personal
+                    ? 'New personal highscore!'
+                    : 'You set a new global highscore! Crazy!'
+
+            homeButton.onclick = () => {
+                Sounds.click.start()
+                gameCompleteElement.classList.remove('visible')
+                document
+                    .getElementById('save-highscore')
+                    .classList.add('visible')
+
+                const playerNameInput = document.getElementById('player-name')
+                const saveHighscoreButton = document.getElementById(
+                    'save-highscore-button'
+                )
+                playerNameInput.value =
+                    localStorage.getItem('player_name') || ''
+
+                if (playerNameInput.value.length === 0) {
+                    playerNameInput.focus()
+                }
+
+                saveHighscoreButton.onclick = async () => {
+                    Sounds.click.start()
+                    saveHighscoreButton.setAttribute('disabled', 'true')
+                    const playerName = playerNameInput.value.trim()
+                    if (playerName.length === 0) {
+                        alert('Please enter a valid player name.')
+                        saveHighscoreButton.removeAttribute('disabled')
+                        return
+                    }
+
+                    localStorage.setItem('player_name', playerName)
+                    infoElement.textContent = 'Saving highscore...'
+
+                    await insertHighscore(playerName, level.levelNumber, timeMs)
+
+                    document.querySelector(
+                        '#save-highscore .info'
+                    ).textContent = 'Highscore saved successfully!'
+
+                    setTimeout(() => {
+                        navigateToPage(Pages.home)
+                    }, 1000)
+                }
+            }
+        } else {
+            infoElement.style.display = 'none'
+        }
+
+        homeButton.removeAttribute('disabled')
     }
 
     rollingSound.start()
@@ -254,17 +349,7 @@ const gameLoop = async () => {
                 .subtract(level.goalPosition)
                 .magnitude()
             if (goalDistance < level.goalRadius * 0.5 + playerRadius) {
-                document
-                    .getElementById('game-complete')
-                    .classList.add('visible')
-                document.getElementById('completion-time').textContent =
-                    elapsedTime.toFixed(2)
-                jsConfetti.addConfetti({
-                    emojis: ['🏆', '🎉', '🥳'],
-                })
-                Sounds.gameComplete.start()
-                rollingSound.stop()
-                gameRunning = false
+                gameComplete(elapsedTime)
                 break
             }
 
@@ -297,9 +382,7 @@ const gameLoop = async () => {
             )
 
             if (timeSinceDeath >= deathAnimationDuration) {
-                document.getElementById('game-over').classList.add('visible')
-                Sounds.gameOver.start()
-                gameRunning = false
+                gameOver()
                 break
             }
         }
@@ -335,8 +418,8 @@ const gameLoop = async () => {
                 holeImage,
                 holeProjected.x,
                 holeProjected.y,
-                hole.radius * 2 * conversionFactor,
-                hole.radius * 2 * conversionFactor
+                hole.radius * 2 * conversionFactor * scaleHoleFactor,
+                hole.radius * 2 * conversionFactor * scaleHoleFactor
             )
         }
 

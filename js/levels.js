@@ -4,6 +4,7 @@ import './lib/jszip.min.js'
 
 export class Level {
     constructor(
+        levelNumber,
         holes,
         walls,
         mapWidth,
@@ -13,6 +14,7 @@ export class Level {
         playerRadius = 9,
         goalRadius = 20
     ) {
+        this.levelNumber = levelNumber
         this.holes = holes
         this.walls = walls
         this.mapWidth = mapWidth
@@ -39,7 +41,7 @@ const positionFromPointElement = (element) => {
 const levelsCache = new Map()
 const zip = new JSZip()
 
-export const loadLevel = async (src) => {
+export const loadLevel = async (src, levelNumber = 1) => {
     if (levelsCache.has(src)) {
         return levelsCache.get(src)
     }
@@ -171,6 +173,7 @@ export const loadLevel = async (src) => {
     const goalPosition = positionFromPointElement(goalPoint)
 
     const level = new Level(
+        levelNumber,
         holes,
         walls,
         mapWidth,

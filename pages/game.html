@@ -2,14 +2,35 @@
 <div id="game-over" class="overlay">
     <h2>Game Over</h2>
     <p>You fell into a hole. Better luck next time!</p>
-    <button class="home-button">Retry</button>
+
+    <nav>
+        <button class="home-button">Back Home</button>
+        <button class="retry-button">Retry</button>
+    </nav>
 </div>
 <div id="game-complete" class="overlay">
     <h2>Game Complete</h2>
     <p>Congratulations! You've beat the game!</p>
-    <h3><span id="completion-time">0</span> seconds</h3>
-    <p class="highscore">New <span id="highscore-type">personal</span> highscore!</span></p>
+    <h3><span id="completion-time">0.0</span> seconds</h3>
+    <p class="info"></p>
     <button class="home-button">Back home</button>
+</div>
+<div id="save-highscore" class="overlay">
+    <h2>Save Highscore</h2>
+    <label for="player-name">Name:</label>
+    <input
+        type="text"
+        id="player-name"
+        placeholder="Enter your name"
+        minlength="2"
+        maxlength="15"
+    /><br />
+    <p class="info"></p>
+
+    <nav>
+        <button class="home-button">Abort</button>
+        <button id="save-highscore-button">Done</button>
+    </nav>
 </div>
 <div id="settings" class="overlay">
     <h2>Game Settings</h2>
@@ -20,10 +41,10 @@
     <label for="volume-slider">Volume</label>
     <input type="range" id="volume-slider" min="0" max="100" value="100" />
 
-    <div>
+    <nav>
         <button class="home-button">Back home</button>
         <button id="resume-game">Resume Game</button>
-    </div>
+    </nav>
 </div>
 <button id="settings-button" class="unstyled floating">⚙️</button>
 <div id="timer">0.0</div>

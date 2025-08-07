@@ -42,9 +42,7 @@ export const insertHighscore = async (playerName, level, timeMs) => {
         console.error('Failed to insert highscore:', error)
         console.info('Falling back to local storage.')
 
-        const unsyncedHighscores = JSON.parse(
-            localStorage.getItem(`unsynced_highscores`) || '[]'
-        )
+        const unsyncedHighscores = getUnsyncedHighscores()
         unsyncedHighscores.push(payload)
         localStorage.setItem(
             `unsynced_highscores`,
@@ -64,17 +62,17 @@ export const getHighscoreType = async (level, timeMs) => {
         throw Error('Local storage is not available.')
     }
 
+    const highscores = await getHighscores(level)
+    if (highscores.length === 0 || highscores[0].time_ms > timeMs) {
+        return HighscoreType.global
+    }
+
     // Server will never be more up-to-date than our local copy
     // (if localStorage is lost the player_id will also be lost)
     const highscore = localStorage.getItem(`highscore_${level}`)
     if (highscore) {
         const { time_ms } = JSON.parse(highscore)
         return timeMs < time_ms ? HighscoreType.personal : HighscoreType.none
-    }
-
-    const highscores = await getHighscores(level)
-    if (highscores.length > 0 && highscores[0].time_ms > timeMs) {
-        return HighscoreType.global
     }
 
     return HighscoreType.personal
@@ -132,9 +130,7 @@ const syncHighscores = async () => {
         throw Error('Local storage is not available.')
     }
 
-    const unsyncedHighscores = JSON.parse(
-        localStorage.getItem(`unsynced_highscores`) || '[]'
-    )
+    const unsyncedHighscores = getUnsyncedHighscores()
 
     const failed = []
     for (const payload of unsyncedHighscores) {
@@ -148,4 +144,12 @@ const syncHighscores = async () => {
     }
 
     localStorage.setItem(`unsynced_highscores`, JSON.stringify(failed))
+}
+
+export const getUnsyncedHighscores = () => {
+    if (!storageAvailable('localStorage')) {
+        throw Error('Local storage is not available.')
+    }
+
+    return JSON.parse(localStorage.getItem(`unsynced_highscores`) || '[]')
 }

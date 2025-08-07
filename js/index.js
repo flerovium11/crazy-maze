@@ -29,12 +29,12 @@ let root
 let currentPage
 const pagesCache = new Map()
 
-export const navigateToPage = async (page) => {
+export const navigateToPage = async (page, forceRefresh = false) => {
     if (!root) {
         throw Error('Document has not been initialized yet.')
     }
 
-    if (currentPage === page) return
+    if (currentPage === page && !forceRefresh) return
 
     let html = pagesCache.get(page)
 
@@ -73,9 +73,6 @@ const preloadLevels = async () => {
 }
 
 // TODO:
-// - [ ] Supabase connection
-// - [ ] Add leaderboard (icon bar at top, same as settings page yk)
-// - [ ] online/offline indicator and store stuff in localStorage while offline
 // - [ ] Cordova
 // - [ ] Presentation (mirror phone screen to desktop, also sound, script)
 
