@@ -1,7 +1,7 @@
 {
-  "port": 8085,
-  "root": "/",
-  "open": "index.html",
-  "host": "localhost",
-  "https": false
+    "port": 8085,
+    "root": "/www",
+    "open": "index.html",
+    "host": "localhost",
+    "https": false
 }
